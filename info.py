@@ -29,5 +29,3 @@
 # Always remember to pull regularly in order to avoid merge conflicts. Also, I
 # recommend turning on notifications for the repo so you know when someone changed
 # something.
-
-

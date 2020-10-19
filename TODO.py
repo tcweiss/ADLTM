@@ -12,9 +12,7 @@
 
 # THOMAS
 
-# oamoaea
 
-# asa
 
 
 

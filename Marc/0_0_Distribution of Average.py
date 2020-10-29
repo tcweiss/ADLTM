@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import plotly.express as px
+from scipy import stats
 
 df_average = pd.read_csv('Average_DATA_IBM_2020-06-05-00-00-00_to_2020-10-18-16-25-33.csv', parse_dates=True, index_col=0)
 df_average.index = pd.to_datetime(df_average.index, yearfirst=True)
@@ -31,3 +32,4 @@ fig = px.line(data_frame=df_average, x=df_average.index, y=df_average['diff'], t
 fig.show()
 
 df_average.to_csv('Differentiation_DATA_IBM_2020-06-05-00-00-00_to_2020-10-18-16-25-33.csv')
+

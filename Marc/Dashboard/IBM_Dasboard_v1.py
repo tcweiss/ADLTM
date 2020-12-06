@@ -237,16 +237,20 @@ for key, value in name_to_sensorId_dict.items():
 
 # Returns the column name of the sensorId provided, named from left to right as A, B, C
 def get_sensor_column(sensorId):
-	if 'A' in sensorId_to_name_dict[sensorId]:
-		return 'A'
-	elif 'B' in sensorId_to_name_dict[sensorId]:
-		return 'B'
-	return 'C'
+	loc = sensorId_to_name_dict[sensorId]
+	column = loc[0]
+	return column
 
 
 # Returns the row name of the sensorId provided, counted from the bottom up, starting at 1
 def get_sensor_row(sensorId):
 	return 43 - int(sensorId_to_name_dict[sensorId][1:])
+
+
+def get_coordinates(sensorId):
+	loc = sensorId_to_name_dict[sensorId]
+	col, row = loc[0], 43 - int(loc[1:])
+	return col, row
 
 
 # Adds two additional columns to the df with the x and y coordinates of the sensors

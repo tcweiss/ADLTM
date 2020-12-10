@@ -5,8 +5,10 @@
 
 import dash
 import dash_core_components as dcc
+import dash_bootstrap_components as dbc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 import plotly
 import plotly.express as px
 import plotly.graph_objects as go
@@ -48,6 +50,7 @@ header = {
 
 # Turns a regular date into a unix time stamp
 def time_in_unix_time(date):
+	date = datetime.datetime.strptime(date, "%y-%m-%d %H:%M:%S")
 	unix_time = time.mktime(date.timetuple())
 
 	return unix_time
@@ -80,7 +83,85 @@ def es_get_most_current_temps():
 	r = requests.get(url=elastic_url, headers=header, json=query)
 	response = r.json()
 
-	return response
+	cleaned_data = clean_data(response)
+	cleaned_data_w_coor = add_coordinates(cleaned_data)
+
+	return cleaned_data_w_coor
+
+
+# Input a ts0 and returns the temperatures for the first available ts after (including) ts0
+def es_get_specific_temps(ts):
+	query = {
+		"size": 1,
+		"query": {
+			"bool": {
+				"filter": [
+					{
+						"range": {
+							"TS": {
+								"gte": time_in_unix_time(ts)
+							}
+						}
+					}
+				]
+			}
+		},
+		"sort": [
+			{
+				"TS": {
+					"order": "asc"
+				}
+			}
+		]
+	}
+
+	r = requests.get(url=elastic_url, headers=header, json=query)
+	response = r.json()
+
+	cleaned_data = clean_data(response)
+	cleaned_data_w_coor = add_coordinates(cleaned_data)
+
+	return cleaned_data_w_coor
+
+
+#Input a ts0 and return the temperatures for the first available ts after (including) ts0 and the previious one
+def es_get_specifc_two_temps(ts):
+	ts1 = time_in_unix_time(ts)
+	ts0 = ts1 - 5 * 60
+	query = {
+		"size": 2,
+		"query": {
+			"bool": {
+				"filter": [
+					{
+						"range": {
+							"TS": {
+								"gte": ts0
+							}
+						}
+					}
+				]
+			}
+		},
+		"sort": [
+			{
+				"TS": {
+					"order": "asc"
+				}
+			}
+		]
+	}
+
+	r = requests.get(url=elastic_url, headers=header, json=query)
+	response = r.json()
+
+	cleaned_data = clean_data(response)
+	transposed_data = cleaned_data.pivot(index='sensorId', columns='TS', values='temp').reset_index()
+	transposed_data_w_coor = add_coordinates(transposed_data)
+	transposed_data_w_coor['diff'] = transposed_data_w_coor[transposed_data_w_coor.columns[2]] - transposed_data_w_coor[transposed_data_w_coor.columns[1]]
+	transposed_data_w_coor = transposed_data_w_coor.round({'diff': 1})
+
+	return transposed_data_w_coor
 
 
 # Cleans the data and puts it into a easy to work with dataframe
@@ -97,9 +178,12 @@ def clean_data(json_data):
 	return data_with_ts
 
 
-### Reorganizing Data ###
-### Reorganizing Data ###
-### Reorganizing Data ###
+# Transposes df and returns a df with sensorIds as columns and ts as rows
+def transpose_df(dataframe):
+	transposed_df = dataframe.pivot(index='TS', columns='sensorId', values='temp').reset_index()
+
+	return transposed_df
+
 
 name_to_sensorId_dict = {
 	"A1": "28.2650D30B0000",
@@ -235,6 +319,13 @@ for key, value in name_to_sensorId_dict.items():
 	sensorId_to_name_dict[value] = key
 
 
+# Takes an dataframe as an input and returns the ts
+def get_timestamp(dataframe):
+	ts = dataframe['TS'][0]
+
+	return ts
+
+
 # Returns the column name of the sensorId provided, named from left to right as A, B, C
 def get_sensor_column(sensorId):
 	loc = sensorId_to_name_dict[sensorId]
@@ -244,12 +335,13 @@ def get_sensor_column(sensorId):
 
 # Returns the row name of the sensorId provided, counted from the bottom up, starting at 1
 def get_sensor_row(sensorId):
-	return 43 - int(sensorId_to_name_dict[sensorId][1:])
+	return int(sensorId_to_name_dict[sensorId][1:])
 
 
+# Takes a sensorId as an input and returns the x and y coordinates
 def get_coordinates(sensorId):
 	loc = sensorId_to_name_dict[sensorId]
-	col, row = loc[0], 43 - int(loc[1:])
+	col, row = loc[0], int(loc[1:])
 	return col, row
 
 
@@ -262,9 +354,16 @@ def add_coordinates(dataframe):
 	return dataframe
 
 
-# Takes dataframe and return a numpy array that can be used for the plotly.figure_factory.create_annotated_heatmap
+# Takes dataframe and returns a numpy array that can be used for the create_plotly_ff_heatmap
 def create_heatmap_array(dataframe):
 	array = dataframe.pivot('y', 'x', 'temp').values
+
+	return array
+
+
+# Takes dataframe of difference in temp and returns a numpy array that can be used for create_plotly_ff_heatmap_diff
+def create_heatmap_diff_array(dataframe):
+	array = dataframe.pivot('y', 'x', 'diff').values
 
 	return array
 
@@ -276,6 +375,7 @@ def create_axis_lists(dataframe):
 	x_list = list(dict.fromkeys(x_list))
 	y_list = dataframe['y'].to_list()
 	y_list = list(dict.fromkeys(y_list))
+	# y_list.reverse()
 
 	return x_list, y_list
 
@@ -291,19 +391,67 @@ def create_plotly_go_heatmap(dataframe):
 
 
 # Takes a dataframe as an input and returns a plotly.figure_factory annotated heatmap
-def create_plotly_ff_heatmap(dataframe):
+def create_plotly_ff_heatmap_abs(dataframe):
 	# colorscale_heatmap = [[0, 'rgb(0,67,206)'], [0.5, 'rgb(105,41,196)'],[1, 'rgb(162,25,31)']]
-	colorscale_heatmap = [[0, 'rgb(0,67,206)'], [1, 'rgb(162,25,31)']]
+	colorscale_heatmap = [[0, 'rgb(69,137,255)'], [1, 'rgb(250,77,86)']]
 
 	x_list, y_list = create_axis_lists(dataframe)
 	heatmap_array = create_heatmap_array(dataframe)
+	ts = get_timestamp(dataframe)
 
 	heatmap = ff.create_annotated_heatmap(
 		x=x_list,
 		y=y_list,
 		z=heatmap_array,
 		colorscale=colorscale_heatmap,
-		showscale=True)
+		xgap = 10,
+		ygap = 1,
+		showscale=True
+	)
+
+	heatmap.update_layout(
+		title=('Absolute temperature at ' + ts),
+		xaxis=dict(title='Column', color='black', side='bottom'),
+		yaxis=dict(title='Row', autorange="reversed"),
+		plot_bgcolor='rgba(0,0,0,0)',
+	)
+
+	heatmap.data[0].colorbar = dict(title='Temperature', titleside='right')
+
+	return heatmap
+
+
+# Takes a dataframe with difference in temps as an input and returns a plotly.figure_factory annotated heatmap
+def create_plotly_ff_heatmap_diff(dataframe):
+	# colorscale_heatmap = [[0, 'rgb(0,67,206)'], [0.5, 'rgb(105,41,196)'],[1, 'rgb(162,25,31)']]
+	max, min = dataframe['diff'].max(), dataframe['diff'].min()
+	midpoint = abs(min)/(abs(max) + abs(min))
+	colorscale_heatmap = [[0, 'rgb(69,137,255)'], [midpoint, 'rgb(255,255,255)'], [1, 'rgb(250,77,86)']]
+
+	x_list, y_list = create_axis_lists(dataframe)
+	heatmap_array = create_heatmap_diff_array(dataframe)
+	ts0, ts1 = dataframe.columns[1], dataframe.columns[2]
+
+	heatmap = ff.create_annotated_heatmap(
+		x=x_list,
+		y=y_list,
+		z=heatmap_array,
+		autocolorscale=False,
+		colorscale=colorscale_heatmap,
+		font_colors=['black'],
+		xgap = 10,
+		ygap = 1,
+		showscale=True
+	)
+
+	heatmap.update_layout(
+		title=('Changes in temperature between ' + ts0 + ' and ' + ts1),
+		xaxis=dict(title='Column', side='bottom'),
+		yaxis=dict(title='Row', autorange="reversed"),
+		plot_bgcolor='rgba(0,0,0,0)',
+	)
+
+	heatmap.data[0].colorbar = dict(title='Temperature Change', titleside='right')
 
 	return heatmap
 
@@ -313,34 +461,73 @@ def create_plotly_ff_heatmap(dataframe):
 ### FRONTEND ###
 
 
+# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+# external_stylesheets = [dbc.themes.MINTY]
+# external_stylesheets = [dbc.themes.BOOTSTRAP]
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
-	html.H1(children='IBM Server Temperature Dashboard'),
-
+	html.H1(children='IBM - Rack Temperature'),
 	dcc.Graph(
 		id='live-update-heatmap-graph',
-		style={'height': 850}),
+		style={'height': 700, 'width': '50%'}
+	),
 	dcc.Interval(
 		id='interval-component',
 		interval=10 * 1000,  # in milliseconds
 		n_intervals=0
+	),
+	html.Div([
+		dcc.Input(
+			id = 'input_ts',
+			type = 'text',
+			placeholder= 'yy-mm-dd HH:MM:SS'
+		),
+		html.Button(
+			id='submit-ts-button-state',
+			n_clicks=0,
+			children='Submit'),
+	]),
+	dcc.Graph(
+		id='user-ts-heatmap-abs-graph',
+		style={'height': 700, 'width': '50%'}
+	),
+	dcc.Graph(
+		id='user-ts-heatmap-diff-graph',
+		style={'height': 700, 'width': '50%'}
 	)
 ])
 
 
-### Update graph every minute for most current data
+# Update graph every minute for most current data
 @app.callback(Output('live-update-heatmap-graph', 'figure'),
 			  Input('interval-component', 'n_intervals'))
-def update_heatmap(n):
-	current_data = clean_data(es_get_most_current_temps())
-	current_data = add_coordinates(current_data)
-	heatmap = create_plotly_ff_heatmap(current_data)
+def update_heatmap_automatically(n):
+	current_data = es_get_most_current_temps()
+	heatmap = create_plotly_ff_heatmap_abs(current_data)
 
 	return heatmap
 
+
+# Create graph based on user input ts
+@app.callback(Output('user-ts-heatmap-abs-graph', 'figure'),
+			  Output('user-ts-heatmap-diff-graph', 'figure'),
+			  Input('submit-ts-button-state', 'n_clicks'),
+			  State('input_ts', 'value'),
+			  prevent_initial_call=True)
+def update_heatmap_user_ts(n_clicks, input_ts):
+	if n_clicks is None:
+		return PreventUpdate
+	else:
+		data_abs_heatmap = es_get_specific_temps(input_ts)
+		heatmap_abs = create_plotly_ff_heatmap_abs(data_abs_heatmap)
+		data_diff = es_get_specifc_two_temps(input_ts)
+		heatmap_diff = create_plotly_ff_heatmap_diff(data_diff)
+
+
+	return heatmap_abs, heatmap_diff
 
 if __name__ == '__main__':
 	app.run_server(debug=True)

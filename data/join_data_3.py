@@ -1,7 +1,7 @@
 import pandas as pd
 import glob
 import os
-from SensorId_Name_Directory import *
+from Data.SensorId_Name_Directory import *
 import math
 import plotly.express as px
 

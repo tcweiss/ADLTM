@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly.express as px
-from SensorId_Name_Directory import *
 
 df_all = pd.read_csv('ALL_DATA_IBM_2020-06-05-00-00-00_to_2020-10-18-16-25-33.csv', parse_dates=True)
 df_all = df_all.drop(labels='Unnamed: 0', axis=1)

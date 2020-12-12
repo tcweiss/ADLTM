@@ -26,7 +26,6 @@ import time
 ### NEW ONES ###
 import numpy as np
 from scipy.stats import multivariate_normal
-# from plotly.subplots import make_subplots
 import statsmodels.api as sm
 from plotly import subplots
 
@@ -1008,7 +1007,7 @@ def gaussian_get_graph(df_general, df_anomalies):
 
 	data2_Andri = [trace19, trace20]
 
-	fig = make_subplots(
+	fig = subplots.make_subplots(
 		rows=2, cols=1,
 		subplot_titles=("Temperature of Sensor Groups", "Estimated Probability Densities"),
 		row_heights=[0.6, 0.4],

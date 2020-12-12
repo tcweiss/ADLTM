@@ -169,7 +169,8 @@ def es_get_diff_ts(ts):
 	cleaned_data = clean_data(response)
 	transposed_data = cleaned_data.pivot(index='sensorId', columns='TS', values='temp').reset_index()
 	transposed_data_w_coor = add_coordinates(transposed_data)
-	transposed_data_w_coor['diff'] = transposed_data_w_coor[transposed_data_w_coor.columns[2]] - transposed_data_w_coor[transposed_data_w_coor.columns[1]]
+	transposed_data_w_coor['diff'] = transposed_data_w_coor[transposed_data_w_coor.columns[2]] - transposed_data_w_coor[
+		transposed_data_w_coor.columns[1]]
 	transposed_data_w_coor = transposed_data_w_coor.round({'diff': 1})
 
 	return transposed_data_w_coor
@@ -209,7 +210,7 @@ def es_get_data(ts, size, aggregated=False):
 	transposed_data = no_dups.pivot(index='TS', columns='sensorId', values='temp').reset_index()
 	renamed_data = transposed_data.rename(columns=sensorId_to_name_dict)
 
-	if aggregated==False:
+	if aggregated == False:
 		renamed_data['TS'] = pd.to_datetime(renamed_data['TS'], yearfirst=True)
 		renamed_data = renamed_data.set_index('TS', drop=True, verify_integrity=True)
 		return renamed_data
@@ -243,7 +244,7 @@ def es_get_last_days(days, aggregated=False):
 	transposed_data = no_dups.pivot(index='TS', columns='sensorId', values='temp').reset_index()
 	renamed_data = transposed_data.rename(columns=sensorId_to_name_dict)
 
-	if aggregated==False:
+	if aggregated == False:
 		renamed_data['TS'] = pd.to_datetime(renamed_data['TS'], yearfirst=True)
 		renamed_data = renamed_data.set_index('TS', drop=True, verify_integrity=True)
 		return renamed_data
@@ -527,8 +528,8 @@ def create_plotly_ff_heatmap_abs(dataframe):
 		y=y_list,
 		z=heatmap_array,
 		colorscale=colorscale_heatmap,
-		xgap = 10,
-		ygap = 1,
+		xgap=10,
+		ygap=1,
 		showscale=True
 	)
 
@@ -548,7 +549,7 @@ def create_plotly_ff_heatmap_abs(dataframe):
 def create_plotly_ff_heatmap_diff(dataframe):
 	# colorscale_heatmap = [[0, 'rgb(0,67,206)'], [0.5, 'rgb(105,41,196)'],[1, 'rgb(162,25,31)']]
 	max, min = dataframe['diff'].max(), dataframe['diff'].min()
-	midpoint = abs(min)/(abs(max) + abs(min))
+	midpoint = abs(min) / (abs(max) + abs(min))
 	colorscale_heatmap = [[0, 'rgb(69,137,255)'], [midpoint, 'rgb(255,255,255)'], [1, 'rgb(250,77,86)']]
 
 	x_list, y_list = create_axis_lists(dataframe)
@@ -562,8 +563,8 @@ def create_plotly_ff_heatmap_diff(dataframe):
 		autocolorscale=False,
 		colorscale=colorscale_heatmap,
 		font_colors=['black'],
-		xgap = 10,
-		ygap = 1,
+		xgap=10,
+		ygap=1,
 		showscale=True
 	)
 
@@ -580,14 +581,14 @@ def create_plotly_ff_heatmap_diff(dataframe):
 
 
 # Fits Daniel's prophet model
-def fit_prophet_model(dataframe, interval_width = 0.98, changepoint_range = 0.9):
-	m = Prophet(daily_seasonality = False, yearly_seasonality = False, weekly_seasonality = False,
-                seasonality_mode = 'multiplicative',
-                interval_width = interval_width,
-                changepoint_range = changepoint_range)
+def fit_prophet_model(dataframe, interval_width=0.98, changepoint_range=0.9):
+	m = Prophet(daily_seasonality=False, yearly_seasonality=False, weekly_seasonality=False,
+				seasonality_mode='multiplicative',
+				interval_width=interval_width,
+				changepoint_range=changepoint_range)
 	m = m.fit(dataframe)
 	forecast = m.predict(dataframe)
-	forecast['fact'] = dataframe['y'].reset_index(drop = True)
+	forecast['fact'] = dataframe['y'].reset_index(drop=True)
 
 	return forecast
 
@@ -719,71 +720,71 @@ def gaussian_data_manipulation(dataframe):
 
 # Hard coded mean parameters for Andri's model
 def gaussian_return_mean():
-	mean = [3.40659341e-05,1.31868132e-04,1.59340659e-04,5.34798535e-05
-			,2.01465201e-05,2.71062271e-05,3.80952381e-05,1.44322344e-04
-			,1.69597070e-04,5.56776557e-05,2.56410256e-05,1.53846154e-05
-			,4.83516484e-05,1.28937729e-04,1.23809524e-04,4.54212454e-05
-			,3.07692308e-05,9.89010989e-06]
+	mean = [3.40659341e-05, 1.31868132e-04, 1.59340659e-04, 5.34798535e-05
+		, 2.01465201e-05, 2.71062271e-05, 3.80952381e-05, 1.44322344e-04
+		, 1.69597070e-04, 5.56776557e-05, 2.56410256e-05, 1.53846154e-05
+		, 4.83516484e-05, 1.28937729e-04, 1.23809524e-04, 4.54212454e-05
+		, 3.07692308e-05, 9.89010989e-06]
 
 	return mean
 
 
 # Hard coded cov parameters for Andri's model
 def gaussian_return_cov():
-	cov = [[0.02719169 ,0.0247103 ,0.00538927 ,0.00166403 ,0.00130125 ,0.00084622
- ,0.01855269 ,0.02123193 ,0.00614357 ,0.00206514 ,0.00040708 ,0.00046282
- ,0.01124767 ,0.01481579 ,0.00493736 ,0.00239486 ,0.00057597 ,0.00023589]
- ,[0.0247103 ,0.08144764 ,0.03388753 ,0.00514032 ,-0.00203963 ,-0.00425561
- ,0.01817861 ,0.05514702 ,0.02870606 ,0.0020737 ,-0.00386256 ,-0.00428179
- ,0.01269326 ,0.0337239 ,0.01827583 ,0.00071801 ,-0.00311381 ,-0.00543763]
- ,[0.00538927 ,0.03388753 ,0.06403214 ,0.03381796 ,0.01276803 ,0.00390462
- ,0.00585659 ,0.02423579 ,0.04469526 ,0.02164947 ,0.00714213 ,0.00406105
- ,0.00595996 ,0.01430928 ,0.0233916 ,0.01183219 ,0.00651803 ,0.00308332]
- ,[0.00166403 ,0.00514032 ,0.03381796 ,0.05352663 ,0.0263228 ,0.01134512
- ,0.00209921 ,0.00210563 ,0.02607938 ,0.0313033 ,0.01637863 ,0.01093151
- ,0.00304203 ,0.00048591 ,0.0089024 ,0.01484916 ,0.01256515 ,0.00974714]
- ,[0.00130125 ,-0.00203963 ,0.01276803 ,0.0263228 ,0.0282219 ,0.0166048
- ,0.00165529 ,-0.00202212 ,0.01234681 ,0.02174676 ,0.01901551 ,0.01539407
- ,0.00215644 ,-0.00066049 ,0.00857175 ,0.01602876 ,0.01635975 ,0.01442982]
- ,[0.00084622 ,-0.00425561 ,0.00390462 ,0.01134512 ,0.0166048 ,0.03611752
- ,0.00120931 ,-0.00303793 ,0.00506121 ,0.01284522 ,0.01576842 ,0.0147402
- ,0.00142081 ,-0.00095742 ,0.00667942 ,0.01271139 ,0.01472371 ,0.01401537]
- ,[0.01855269 ,0.01817861 ,0.00585659 ,0.00209921 ,0.00165529 ,0.00120931
- ,0.02619054 ,0.02513861 ,0.00704341 ,0.00235419 ,0.00071286 ,0.00069218
- ,0.01652936 ,0.01922356 ,0.00496206 ,0.00241969 ,0.00094595 ,0.00053199]
- ,[0.02123193 ,0.05514702 ,0.02423579 ,0.00210563 ,-0.00202212 ,-0.00303793
- ,0.02513861 ,0.07851554 ,0.03213649 ,0.00220184 ,-0.00338038 ,-0.00350383
- ,0.01749358 ,0.05229728 ,0.02401082 ,0.00122151 ,-0.00233368 ,-0.00454172]
- ,[0.00614357 ,0.02870606 ,0.04469526 ,0.02607938 ,0.01234681 ,0.00506121
- ,0.00704341 ,0.03213649 ,0.06664739 ,0.0287093 ,0.00929999 ,0.00545462
- ,0.00653072 ,0.0229011 ,0.03816196 ,0.01914716 ,0.00859508 ,0.00428091]
- ,[0.00206514 ,0.0020737 ,0.02164947 ,0.0313033 ,0.02174676 ,0.01284522
- ,0.00235419 ,0.00220184 ,0.0287093 ,0.03874142 ,0.02068935 ,0.01340993
- ,0.002712 ,0.00303598 ,0.02056199 ,0.02483131 ,0.01725428 ,0.01229816]
- ,[0.00040708 ,-0.00386256 ,0.00714213 ,0.01637863 ,0.01901551 ,0.01576842
- ,0.00071286 ,-0.00338038 ,0.00929999 ,0.02068935 ,0.02423331 ,0.01710358
- ,0.00110551 ,-0.00116496 ,0.01135323 ,0.01872331 ,0.0198548 ,0.01565222]
- ,[0.00046282 ,-0.00428179 ,0.00406105 ,0.01093151 ,0.01539407 ,0.0147402
- ,0.00069218 ,-0.00350383 ,0.00545462 ,0.01340993 ,0.01710358 ,0.01611497
- ,0.00107116 ,-0.00128726 ,0.00777826 ,0.01368636 ,0.01603593 ,0.01467482]
- ,[0.01124767 ,0.01269326 ,0.00595996 ,0.00304203 ,0.00215644 ,0.00142081
- ,0.01652936 ,0.01749358 ,0.00653072 ,0.002712 ,0.00110551 ,0.00107116
- ,0.01870008 ,0.01747865 ,0.00440035 ,0.00252027 ,0.00135431 ,0.00087502]
- ,[0.01481579 ,0.0337239 ,0.01430928 ,0.00048591 ,-0.00066049 ,-0.00095742
- ,0.01922356 ,0.05229728 ,0.0229011 ,0.00303598 ,-0.00116496 ,-0.00128726
- ,0.01747865 ,0.06139911 ,0.02832799 ,0.00385439 ,0.00015319 ,-0.00234917]
- ,[0.00493736 ,0.01827583 ,0.0233916 ,0.0089024 ,0.00857175 ,0.00667942
- ,0.00496206 ,0.02401082 ,0.03816196 ,0.02056199 ,0.01135323 ,0.00777826
- ,0.00440035 ,0.02832799 ,0.06185261 ,0.02283718 ,0.0122981 ,0.00652857]
- ,[0.00239486 ,0.00071801 ,0.01183219 ,0.01484916 ,0.01602876 ,0.01271139
- ,0.00241969 ,0.00122151 ,0.01914716 ,0.02483131 ,0.01872331 ,0.01368636
- ,0.00252027 ,0.00385439 ,0.02283718 ,0.02943048 ,0.01872852 ,0.01294223]
- ,[0.00057597 ,-0.00311381 ,0.00651803 ,0.01256515 ,0.01635975 ,0.01472371
- ,0.00094595 ,-0.00233368 ,0.00859508 ,0.01725428 ,0.0198548 ,0.01603593
- ,0.00135431 ,0.00015319 ,0.0122981 ,0.01872852 ,0.02094934 ,0.01515228]
- ,[0.00023589 ,-0.00543763 ,0.00308332 ,0.00974714 ,0.01442982 ,0.01401537
- ,0.00053199 ,-0.00454172 ,0.00428091 ,0.01229816 ,0.01565222 ,0.01467482
- ,0.00087502 ,-0.00234917 ,0.00652857 ,0.01294223 ,0.01515228 ,0.01516658]]
+	cov = [[0.02719169, 0.0247103, 0.00538927, 0.00166403, 0.00130125, 0.00084622
+			   , 0.01855269, 0.02123193, 0.00614357, 0.00206514, 0.00040708, 0.00046282
+			   , 0.01124767, 0.01481579, 0.00493736, 0.00239486, 0.00057597, 0.00023589]
+		, [0.0247103, 0.08144764, 0.03388753, 0.00514032, -0.00203963, -0.00425561
+			   , 0.01817861, 0.05514702, 0.02870606, 0.0020737, -0.00386256, -0.00428179
+			   , 0.01269326, 0.0337239, 0.01827583, 0.00071801, -0.00311381, -0.00543763]
+		, [0.00538927, 0.03388753, 0.06403214, 0.03381796, 0.01276803, 0.00390462
+			   , 0.00585659, 0.02423579, 0.04469526, 0.02164947, 0.00714213, 0.00406105
+			   , 0.00595996, 0.01430928, 0.0233916, 0.01183219, 0.00651803, 0.00308332]
+		, [0.00166403, 0.00514032, 0.03381796, 0.05352663, 0.0263228, 0.01134512
+			   , 0.00209921, 0.00210563, 0.02607938, 0.0313033, 0.01637863, 0.01093151
+			   , 0.00304203, 0.00048591, 0.0089024, 0.01484916, 0.01256515, 0.00974714]
+		, [0.00130125, -0.00203963, 0.01276803, 0.0263228, 0.0282219, 0.0166048
+			   , 0.00165529, -0.00202212, 0.01234681, 0.02174676, 0.01901551, 0.01539407
+			   , 0.00215644, -0.00066049, 0.00857175, 0.01602876, 0.01635975, 0.01442982]
+		, [0.00084622, -0.00425561, 0.00390462, 0.01134512, 0.0166048, 0.03611752
+			   , 0.00120931, -0.00303793, 0.00506121, 0.01284522, 0.01576842, 0.0147402
+			   , 0.00142081, -0.00095742, 0.00667942, 0.01271139, 0.01472371, 0.01401537]
+		, [0.01855269, 0.01817861, 0.00585659, 0.00209921, 0.00165529, 0.00120931
+			   , 0.02619054, 0.02513861, 0.00704341, 0.00235419, 0.00071286, 0.00069218
+			   , 0.01652936, 0.01922356, 0.00496206, 0.00241969, 0.00094595, 0.00053199]
+		, [0.02123193, 0.05514702, 0.02423579, 0.00210563, -0.00202212, -0.00303793
+			   , 0.02513861, 0.07851554, 0.03213649, 0.00220184, -0.00338038, -0.00350383
+			   , 0.01749358, 0.05229728, 0.02401082, 0.00122151, -0.00233368, -0.00454172]
+		, [0.00614357, 0.02870606, 0.04469526, 0.02607938, 0.01234681, 0.00506121
+			   , 0.00704341, 0.03213649, 0.06664739, 0.0287093, 0.00929999, 0.00545462
+			   , 0.00653072, 0.0229011, 0.03816196, 0.01914716, 0.00859508, 0.00428091]
+		, [0.00206514, 0.0020737, 0.02164947, 0.0313033, 0.02174676, 0.01284522
+			   , 0.00235419, 0.00220184, 0.0287093, 0.03874142, 0.02068935, 0.01340993
+			   , 0.002712, 0.00303598, 0.02056199, 0.02483131, 0.01725428, 0.01229816]
+		, [0.00040708, -0.00386256, 0.00714213, 0.01637863, 0.01901551, 0.01576842
+			   , 0.00071286, -0.00338038, 0.00929999, 0.02068935, 0.02423331, 0.01710358
+			   , 0.00110551, -0.00116496, 0.01135323, 0.01872331, 0.0198548, 0.01565222]
+		, [0.00046282, -0.00428179, 0.00406105, 0.01093151, 0.01539407, 0.0147402
+			   , 0.00069218, -0.00350383, 0.00545462, 0.01340993, 0.01710358, 0.01611497
+			   , 0.00107116, -0.00128726, 0.00777826, 0.01368636, 0.01603593, 0.01467482]
+		, [0.01124767, 0.01269326, 0.00595996, 0.00304203, 0.00215644, 0.00142081
+			   , 0.01652936, 0.01749358, 0.00653072, 0.002712, 0.00110551, 0.00107116
+			   , 0.01870008, 0.01747865, 0.00440035, 0.00252027, 0.00135431, 0.00087502]
+		, [0.01481579, 0.0337239, 0.01430928, 0.00048591, -0.00066049, -0.00095742
+			   , 0.01922356, 0.05229728, 0.0229011, 0.00303598, -0.00116496, -0.00128726
+			   , 0.01747865, 0.06139911, 0.02832799, 0.00385439, 0.00015319, -0.00234917]
+		, [0.00493736, 0.01827583, 0.0233916, 0.0089024, 0.00857175, 0.00667942
+			   , 0.00496206, 0.02401082, 0.03816196, 0.02056199, 0.01135323, 0.00777826
+			   , 0.00440035, 0.02832799, 0.06185261, 0.02283718, 0.0122981, 0.00652857]
+		, [0.00239486, 0.00071801, 0.01183219, 0.01484916, 0.01602876, 0.01271139
+			   , 0.00241969, 0.00122151, 0.01914716, 0.02483131, 0.01872331, 0.01368636
+			   , 0.00252027, 0.00385439, 0.02283718, 0.02943048, 0.01872852, 0.01294223]
+		, [0.00057597, -0.00311381, 0.00651803, 0.01256515, 0.01635975, 0.01472371
+			   , 0.00094595, -0.00233368, 0.00859508, 0.01725428, 0.0198548, 0.01603593
+			   , 0.00135431, 0.00015319, 0.0122981, 0.01872852, 0.02094934, 0.01515228]
+		, [0.00023589, -0.00543763, 0.00308332, 0.00974714, 0.01442982, 0.01401537
+			   , 0.00053199, -0.00454172, 0.00428091, 0.01229816, 0.01565222, 0.01467482
+			   , 0.00087502, -0.00234917, 0.00652857, 0.01294223, 0.01515228, 0.01516658]]
 
 	return cov
 
@@ -1082,7 +1083,8 @@ def hp_filter_get_graph(df_general, df_anomalies):
 
 	fig.add_trace(go.Scatter(x=df_general['ds'], y=df_general['y'], mode='lines', name='Temperature'), row=1, col=1)
 	fig.add_trace(go.Scatter(x=df_general['ds'], y=df_general['err'], mode='lines', name='Filter error'), row=2, col=1)
-	fig.add_trace(go.Scatter(x=df_anomalies['ds'], y=df_anomalies['err'], mode='markers', name='Filter anomaly'), row=2, col=1)
+	fig.add_trace(go.Scatter(x=df_anomalies['ds'], y=df_anomalies['err'], mode='markers', name='Filter anomaly'), row=2,
+				  col=1)
 
 	return fig
 
@@ -1109,44 +1111,43 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets, suppress_ca
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "16rem",
-    "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
+	"position": "fixed",
+	"top": 0,
+	"left": 0,
+	"bottom": 0,
+	"width": "16rem",
+	"padding": "2rem 1rem",
+	"background-color": "#f8f9fa",
 }
 
 # the styles for the main content position it to the right of the sidebar and
 # add some padding.
 CONTENT_STYLE = {
-    "margin-left": "18rem",
-    "margin-right": "2rem",
-    "padding": "2rem 1rem",
+	"margin-left": "18rem",
+	"margin-right": "2rem",
+	"padding": "2rem 1rem",
 }
 
 sidebar = html.Div(
-    [
-        html.H2("IBM RACK TEMPERATURE", className="display-5"),
-        html.Hr(),
-        html.P(
-            "A simple sidebar layout with navigation links", className="lead"
-        ),
-        dbc.Nav(
-            [
-                dbc.NavLink("Dashboard", href="/page-1", id="page-1-link"),
+	[
+		html.H2("IBM RACK TEMPERATURE", className="display-5"),
+		html.Hr(),
+		html.P(
+			"A simple sidebar layout with navigation links", className="lead"
+		),
+		dbc.Nav(
+			[
+				dbc.NavLink("Dashboard", href="/page-1", id="page-1-link"),
 				dbc.NavLink("Heatmap", href="/page-2", id="page-2-link"),
-                dbc.NavLink("Anomalies", href="/page-3", id="page-3-link"),
-                dbc.NavLink("About", href="/page-4", id="page-4-link"),
-            ],
-            vertical=True,
-            pills=True,
-        ),
-    ],
-    style=SIDEBAR_STYLE,
+				dbc.NavLink("Anomalies", href="/page-3", id="page-3-link"),
+				dbc.NavLink("About", href="/page-4", id="page-4-link"),
+			],
+			vertical=True,
+			pills=True,
+		),
+	],
+	style=SIDEBAR_STYLE,
 )
-
 
 tab_dashboard = html.Div([
 	dbc.Col([
@@ -1169,7 +1170,6 @@ tab_dashboard = html.Div([
 		),
 	])
 ], style={'columnCount': 2})
-
 
 tab_anomalies = html.Div([
 	dbc.Row([
@@ -1204,9 +1204,9 @@ tab_anomalies = html.Div([
 				'Select a Sensor or Region:'
 			),
 			dcc.Input(
-				id = 'anomaly-sensor-input',
-				type = 'text',
-				placeholder= 'Sensor (e.g. "A1") or Region (e.g. "rA1")',
+				id='anomaly-sensor-input',
+				type='text',
+				placeholder='Sensor (e.g. "A1") or Region (e.g. "rA1")',
 			),
 		]),
 		dbc.Col([
@@ -1237,14 +1237,13 @@ tab_anomalies = html.Div([
 	], style={'columnCount': 4})
 ])
 
-
 tab_heatmap = html.Div([
 	dbc.Row([
 		html.Div([
 			dcc.Input(
-				id = 'input_ts',
-				type = 'text',
-				placeholder= 'yy-mm-dd HH:MM:SS'
+				id='input_ts',
+				type='text',
+				placeholder='yy-mm-dd HH:MM:SS'
 			),
 			html.Button(
 				id='submit-ts-button-state',
@@ -1255,25 +1254,22 @@ tab_heatmap = html.Div([
 	dbc.Row([
 		dbc.Col([
 			dcc.Graph(
-					id='user-ts-heatmap-abs-graph',
-					style={'height': '80vh'}
-				),
+				id='user-ts-heatmap-abs-graph',
+				style={'height': '80vh'}
+			),
 		]),
 		dbc.Col([
 			dcc.Graph(
-					id='user-ts-heatmap-diff-graph',
-					style={'height': '80vh'}
-				),
+				id='user-ts-heatmap-diff-graph',
+				style={'height': '80vh'}
+			),
 		]),
 	], style={'columnCount': 2}),
 ])
 
-
 tab_about = html.Div(
 	html.P("This is the about!")
 )
-
-
 
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
@@ -1283,13 +1279,13 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
 @app.callback(
-    [Output(f"page-{i}-link", "active") for i in range(1, 4)],
-    [Input("url", "pathname")],)
+	[Output(f"page-{i}-link", "active") for i in range(1, 4)],
+	[Input("url", "pathname")], )
 def toggle_active_links(pathname):
-    if pathname == "/":
-        # Treat page 1 as the homepage / index
-        return True, False, False
-    return [pathname == f"/page-{i}" for i in range(1, 4)]
+	if pathname == "/":
+		# Treat page 1 as the homepage / index
+		return True, False, False
+	return [pathname == f"/page-{i}" for i in range(1, 4)]
 
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
@@ -1310,6 +1306,7 @@ def render_page_content(pathname):
 			html.P(f"The pathname {pathname} was not recognised..."),
 		]
 	)
+
 
 # Update graph every minute for most current data
 @app.callback(Output('live-update-heatmap-graph', 'figure'),
@@ -1343,7 +1340,7 @@ def update_heatmap_user_ts(n_clicks, ts_value):
 @app.callback(Output('anomaly-output-graph', 'figure'),
 			  # Output('anomaly-output-table', 'data'),
 			  Input('anomaly-submit-button', 'n_clicks'),
-			  State('anomaly-model-dropdown','value'),
+			  State('anomaly-model-dropdown', 'value'),
 			  State('anomaly-sensor-input', 'value'),
 			  State('anomaly-days-dropdown', 'value'),
 			  prevent_initial_call=True)
@@ -1352,9 +1349,9 @@ def update_prophet_user_input(n_clicks, model, sensor, days):
 		return PreventUpdate
 	else:
 		if 'r' in sensor:
-			aggregated=True
+			aggregated = True
 		else:
-			aggregated=False
+			aggregated = False
 
 		if model == 'gaussian':
 			data = es_get_last_days(days, aggregated=True)
@@ -1368,7 +1365,7 @@ def update_prophet_user_input(n_clicks, model, sensor, days):
 
 			return fig
 
-		elif model =='hp_filter':
+		elif model == 'hp_filter':
 			data = es_get_last_days(days, aggregated=aggregated)
 			ind_region_data = get_df_for_daniel(data, sensor)
 			decomposed_data = hp_filter_decomposition(ind_region_data)
@@ -1389,6 +1386,7 @@ def update_prophet_user_input(n_clicks, model, sensor, days):
 
 			return fig
 
+
 ##### NEW FRONTEND END #####
 ##### NEW FRONTEND END #####
 ##### NEW FRONTEND END #####
@@ -1396,4 +1394,3 @@ def update_prophet_user_input(n_clicks, model, sensor, days):
 
 if __name__ == '__main__':
 	app.run_server(debug=True)
-

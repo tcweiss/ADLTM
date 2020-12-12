@@ -114,7 +114,7 @@ def sortDfByDate(dataframe):
 
 ###Save data in CSV with corresponding name
 def saveDataAsCSV(dataframe, start, end):
-	path = '/Users/marc/Desktop/OneDrive/Studium/Master/MBI/Data Science & Technology Club/PG_IBM/IBM_Data/'
+	path = '/IBM_Data/'
 	dataframe.to_csv(path + 'IBM_' + str(start) + '_to_' + str(end) + '.csv', index=False)
 
 

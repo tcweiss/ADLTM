@@ -1184,7 +1184,7 @@ tab_heatmap = html.Div([
 				n_clicks=0,
 				children='Submit'),
 		]),
-	], align='center'),
+	]),
 	dbc.Row([
 		dbc.Col([
 			dcc.Graph(

@@ -1328,7 +1328,7 @@ tab_about = html.Div([
 		]),
 		dbc.Col([
 			html.A(
-				"LinkedIn", href='https://www.google.com', target="_blank"
+				"LinkedIn", href='http://linkedin.com/in/adam-novak-2a03b216b', target="_blank"
 			),
 		])
 	]),
@@ -1384,13 +1384,13 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
 @app.callback(
-	[Output(f"page-{i}-link", "active") for i in range(1, 4)],
+	[Output(f"page-{i}-link", "active") for i in range(1, 5)],
 	[Input("url", "pathname")], )
 def toggle_active_links(pathname):
 	if pathname == "/":
 		# Treat page 1 as the homepage / index
 		return True, False, False
-	return [pathname == f"/page-{i}" for i in range(1, 4)]
+	return [pathname == f"/page-{i}" for i in range(1, 5)]
 
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])

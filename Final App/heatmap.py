@@ -36,10 +36,6 @@ import statsmodels.api as sm
 from plotly import subplots
 
 from query import *
-from heatmap import *
-from gaussian import *
-from HPfilter import *
-from Prophet import *
 
 #Functions for Heatmap:-------------------------------------------------------------------------------------------------
 

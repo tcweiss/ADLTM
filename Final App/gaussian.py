@@ -37,9 +37,7 @@ from plotly import subplots
 
 from query import *
 from heatmap import *
-from gaussian import *
 from HPfilter import *
-from Prophet import *
 
 #Fit Gaussian Model:-----------------------------------------------------------------------------------------
 

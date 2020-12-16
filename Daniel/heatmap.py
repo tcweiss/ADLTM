@@ -14,6 +14,8 @@ from plotly.subplots import make_subplots
 import statsmodels.api as sm
 from plotly import subplots
 
+from query import *
+
 
 # Takes dataframe and returns a numpy array that can be used for the create_plotly_ff_heatmap
 def create_heatmap_array(dataframe):

@@ -1,6 +1,11 @@
 import pandas as pd
 import base64
 import requests
+import datetime
+import base64
+import math
+import time
+import numpy as np
 
 elastic_url = 'http://159.122.185.120:9200'
 index = "adltm.ch.2"

@@ -1,5 +1,6 @@
 import pandas as pd
 import base64
+import requests
 
 elastic_url = 'http://159.122.185.120:9200'
 index = "adltm.ch.2"

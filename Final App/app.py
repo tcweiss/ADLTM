@@ -39,7 +39,7 @@ from query import *
 from heatmap import *
 from gaussian import *
 from HPfilter import *
-from Prophet import *
+from prophet import *
 
 # FRONTEND:------------------------------------------------------------------------------------------------
 

@@ -14,6 +14,8 @@ from plotly.subplots import make_subplots
 import statsmodels.api as sm
 from plotly import subplots
 
+from query import *
+
 # Decompose time series into cycle and trend for HP filter Model
 def hp_filter_decomposition(dataframe):
 	cycle, trend = sm.tsa.filters.hpfilter(dataframe['y'], 10000)

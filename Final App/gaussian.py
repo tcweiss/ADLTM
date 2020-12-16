@@ -36,8 +36,6 @@ import statsmodels.api as sm
 from plotly import subplots
 
 from query import *
-from heatmap import *
-from HPfilter import *
 
 #Fit Gaussian Model:-----------------------------------------------------------------------------------------
 

@@ -15,6 +15,7 @@ import statsmodels.api as sm
 from plotly import subplots
 from fbprophet import Prophet
 
+from query import *
 
 # Fits Daniel's prophet model
 def prophet_fit_model(dataframe, interval_width=0.98, changepoint_range=0.9):

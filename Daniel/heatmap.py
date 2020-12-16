@@ -1,3 +1,20 @@
+import plotly
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.figure_factory as ff
+import pandas as pd
+import datetime
+import requests
+import base64
+import math
+import time
+import numpy as np
+from scipy.stats import multivariate_normal
+from plotly.subplots import make_subplots
+import statsmodels.api as sm
+from plotly import subplots
+
+
 # Takes dataframe and returns a numpy array that can be used for the create_plotly_ff_heatmap
 def create_heatmap_array(dataframe):
 	array = dataframe.pivot('y', 'x', 'temp').values

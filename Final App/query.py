@@ -34,11 +34,6 @@ from scipy.stats import multivariate_normal
 import statsmodels.api as sm
 from plotly import subplots
 
-from heatmap import *
-from gaussian import *
-from HPfilter import *
-from Prophet import *
-
 #Elastic Search Functions:----------------------------------------------------------------------------------
 
 ### Header ###

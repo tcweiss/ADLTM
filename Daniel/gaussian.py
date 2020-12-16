@@ -14,6 +14,9 @@ from plotly.subplots import make_subplots
 import statsmodels.api as sm
 from plotly import subplots
 
+from query import *
+
+
 
 
 # take the difference in temperature between each time stamp for each sensor group

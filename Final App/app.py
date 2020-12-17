@@ -288,64 +288,96 @@ tab_about = html.Div([
             [
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/marc.jpeg", top=True),
+                        dbc.CardImg(src="/assets/marc.jpeg", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Marc-Robin Gruener", className="card-title"),
                                 html.P([
                                     "Marc was heavily involved on many different tasks. He mainly focused on integrating the different modules everyone was working on into a comprehensive software solution. Furthermore, he created the different heatmaps, wrote functions for the database queries and therefore ensured that the tool runs efficiently and with real time data, and he examined and tested various modeling approaches himself. Please contact Marc for very general issues: ",
-                                    html.A('email', href='mailto:marc-robin.gruener@student.unisg.ch?subject=IBM Temperature Management Dashboard', target='_blank'), ],
+                                    html.A('email',
+                                           href='mailto:marc-robin.gruener@student.unisg.ch?subject=IBM Temperature Management Dashboard',
+                                           target='_blank'), ],
                                     className="card-text",
-                                    style={"text-align": "justify"},
+                                    style={"text-align": "justify", "font-size": "75%"},
                                 ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/marc-robin-gruener/', target="_blank", color="primary", className="mt-auto"
+                                html.Div(
+                                    dbc.Button(
+                                        "LinkedIn", href='https://www.linkedin.com/in/marc-robin-gruener/',
+                                        target="_blank", color="primary", className="mt-auto"
+                                    ),
+                                    style={"text-align": "center"}
                                 ),
                             ]
                         ),
-                    ]
+                    ],
+                    style={"border-width": "2px", "border-color": "black", "border-radius": "130px"}
                 ),
+                dbc.Card(style={"max-width": "110px", "border": "none"}),
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/AndriData2.jpg", top=True),
+                        dbc.CardImg(src="/assets/AndriData2.jpg", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Andri Turra", className="card-title"),
                                 html.P([
                                     'Andri was responsible for developing the Multivariate Gaussian Model. This model considers correlations of temperature changes across regions and therefore allows the user to identify holistic temperature behaviour which is unlikely to occur under normal circumstances. He also created the corresponding visualization and designed the "About" page. Please do not hesitate to contact Andri for questions regarding the Multivariate Gaussian Model: ',
-                                    html.A('email', href='mailto:andri.turra@gmail.com?subject=IBM Temperature Management Dashboard', target='_blank'),],
+                                    html.A('email',
+                                           href='mailto:andri.turra@gmail.com?subject=IBM Temperature Management Dashboard',
+                                           target='_blank'), ],
                                     className="card-text",
-                                    style={"text-align": "justify"},
+                                    style={"text-align": "justify", "font-size": "75%"},
                                 ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/andri-turra-85366b127/', target="_blank", color="primary", className="mt-auto"
+                                html.Div(
+                                    dbc.Button(
+                                        "LinkedIn", href='https://www.linkedin.com/in/andri-turra-85366b127/',
+                                        target="_blank", color="primary", className="mt-auto"
+                                    ),
+                                    style={"text-align": "center"}
                                 ),
                             ]
                         ),
-                    ]
+                    ],
+                    style={"border-width": "2px", "border-color": "black", "border-radius": "130px"}
                 ),
+                dbc.Card(style={"max-width": "110px", "border": "none"}),
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/Daniel.png", top=True),
+                        dbc.CardImg(src="/assets/Daniel.png", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Daniel Leal", className="card-title"),
                                 html.P([
                                     "Daniel designed and implemented the Prophet Model. This approach models the time series data of individual sensors/regions and flags an anomaly if the observed data breaks out of predefined bounds... Furthermore, he created the corresponding visualization and participated actively in the design of the overall solution. Questions regarding the Prophet Model can be directly addressed to Daniel: ",
-                                    html.A('email', href='mailto:daniel.leal@student.unisg.ch?subject=IBM Temperature Management Dashboard', target='_blank'),],
+                                    html.A('email',
+                                           href='mailto:daniel.leal@student.unisg.ch?subject=IBM Temperature Management Dashboard',
+                                           target='_blank'), ],
                                     className="card-text",
-                                    style={"text-align": "justify"},
+                                    style={"text-align": "justify", "font-size": "75%"},
                                 ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/daniel-a-leal/', target="_blank", color="primary", className="mt-auto"
+                                html.Div(
+                                    dbc.Button(
+                                        "LinkedIn", href='https://www.linkedin.com/in/daniel-a-leal/',
+                                        target="_blank", color="primary", className="mt-auto"
+                                    ),
+                                    style={"text-align": "center"}
                                 ),
                             ]
                         ),
-                    ]
+                    ],
+                    style={"border-width": "2px", "border-color": "black", "border-radius": "130px"}
                 ),
+            ]
+        )
+
+    ]),
+    html.Br(className="my-2"),
+    html.Br(className="my-2"),
+    dbc.Row([
+        dbc.CardDeck(
+            [
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/thomas.PNG", top=True),
+                        dbc.CardImg(src="/assets/thomas.PNG", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Thomas Weiss", className="card-title"),
@@ -355,19 +387,24 @@ tab_about = html.Div([
                                            href='mailto:tcweiss@protonmail.com?subject=IBM Temperature Management Dashboard',
                                            target='_blank'), ],
                                     className="card-text",
-                                    style={"text-align": "justify", "font-size":"60%"},
+                                    style={"text-align": "justify", "font-size": "75%"},
                                 ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/thomas-w-574b1015a/', target="_blank",
-                                    color="primary", className="mt-auto"
+                                html.Div(
+                                    dbc.Button(
+                                        "LinkedIn", href='https://www.linkedin.com/in/thomas-w-574b1015a/',
+                                        target="_blank", color="primary", className="mt-auto"
+                                    ),
+                                    style={"text-align": "center"}
                                 ),
                             ]
                         ),
-                    ]
+                    ],
+                    style={"border-width": "2px", "border-color": "black", "border-radius": "130px"}
                 ),
+                dbc.Card(style={"max-width": "110px", "border": "none"}),
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/Adam.PNG", top=True),
+                        dbc.CardImg(src="/assets/Adam.PNG", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Adam Novak", className="card-title"),
@@ -377,102 +414,46 @@ tab_about = html.Div([
                                            href='mailto:adam.novak@student.unisg.ch?subject=IBM Temperature Management Dashboard',
                                            target='_blank'), ],
                                     className="card-text",
-                                    style={"text-align": "justify"},
+                                    style={"text-align": "justify", "font-size": "75%"},
                                 ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/adam-novak-2a03b216b/',
-                                    target="_blank", color="primary", className="mt-auto"
+                                html.Div(
+                                    dbc.Button(
+                                        "LinkedIn", href='https://www.linkedin.com/in/adam-novak-2a03b216b/',
+                                        target="_blank", color="primary", className="mt-auto"
+                                    ),
+                                    style={"text-align": "center"}
                                 ),
                             ]
                         ),
-                    ]
+                    ],
+                    style={"border-width": "2px", "border-color": "black", "border-radius": "130px"}
                 ),
+                dbc.Card(style={"max-width": "110px", "border": "none"}),
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/lorenz.png", top=True),
+                        dbc.CardImg(src="/assets/Lorenz.png", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Lorenz Schmidlin", className="card-title"),
                                 html.P([
                                     "Lorenz organized the whole project. He was essential for the communication between IBM and the development team. Additionally, he organized important info and learning sessions, and he also helped out if some issues arised during the development process. Please contact Lorenz if you are interested in further projects with the Data Science & Technology Club: ",
                                     html.A('email',
-                                           href='mailto:andri.turra@gmail.com?subject=IBM Temperature Management Dashboard',
+                                           href='mailto:lorenz.schmidlin@student.unisg.ch?subject=IBM Temperature Management Dashboard',
                                            target='_blank'), ],
                                     className="card-text",
-                                    style={"text-align": "justify"},
+                                    style={"text-align": "justify", "font-size": "75%"},
                                 ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/lorenz-schmidlin-0b2516114/',
-                                    target="_blank", color="primary", className="mt-auto"
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
-            ]
-        )
-
-    ]),
-    html.Br(className="my-2"),
-    dbc.Row([
-        dbc.CardDeck(
-            [
-                dbc.Card(
-                    [
-                        dbc.CardImg(src="/assets/thomas.PNG", top=True),
-                        dbc.CardBody(
-                            [
-                                html.H5("Thomas Weiss", className="card-title"),
-                                html.P([
-                                    "Thomas guaranteed a smooth cooperation by setting up a Github-Repo. Additionally, he contributed a lot to the development of the application with his expertise in programming and the creation of dashboards... Please contact Thomas if you would like to build this application with R Shiny: ",
-                                    html.A('email', href='mailto:tcweiss@protonmail.com?subject=IBM Temperature Management Dashboard', target='_blank'), ],
-                                    className="card-text",
-                                    style={"text-align": "justify"},
-                                ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/thomas-w-574b1015a/', target="_blank", color="primary", className="mt-auto"
+                                html.Div(
+                                    dbc.Button(
+                                        "LinkedIn", href='https://www.linkedin.com/in/lorenz-schmidlin-0b2516114/',
+                                        target="_blank", color="primary", className="mt-auto"
+                                    ),
+                                    style={"text-align": "center"}
                                 ),
                             ]
                         ),
-                    ]
-                ),
-                dbc.Card(
-                    [
-                        dbc.CardImg(src="/assets/Adam.PNG", top=True),
-                        dbc.CardBody(
-                            [
-                                html.H5("Adam Novak", className="card-title"),
-                                html.P([
-                                    "Adam came up with the Hodrick Prescott Filter. His approach first smooths out the time series data and then calculates the error difference between the filtered data and the actual temperatures. This allows us the user to find abrupt changes in temperature readings, which is usually a sign of anomalous sensor behavior. In case you have questions regarding the HP Filter, please do not hesitate to reach out to Adam: ",
-                                    html.A('email', href='mailto:adam.novak@student.unisg.ch?subject=IBM Temperature Management Dashboard', target='_blank'), ],
-                                    className="card-text",
-                                    style={"text-align": "justify"},
-                                ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/adam-novak-2a03b216b/', target="_blank", color="primary", className="mt-auto"
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
-                dbc.Card(
-                    [
-                        dbc.CardImg(src="/assets/lorenz.png", top=True),
-                        dbc.CardBody(
-                            [
-                                html.H5("Lorenz Schmidlin", className="card-title"),
-                                html.P([
-                                    "Lorenz organized the whole project. He was essential for the communication between IBM and the development team. Additionally, he organized important info and learning sessions, and he also helped out if some issues arised during the development process. Please contact Lorenz if you are interested in further projects with the Data Science & Technology Club: ",
-                                    html.A('email', href='mailto:andri.turra@gmail.com?subject=IBM Temperature Management Dashboard', target='_blank'), ],
-                                    className="card-text",
-                                    style={"text-align": "justify"},
-                                ),
-                                dbc.Button(
-                                    "LinkedIn", href='https://www.linkedin.com/in/lorenz-schmidlin-0b2516114/', target="_blank", color="primary", className="mt-auto"
-                                ),
-                            ]
-                        ),
-                    ]
+                    ],
+                    style={"border-width": "2px", "border-color": "black", "border-radius": "130px"}
                 ),
             ]
         )

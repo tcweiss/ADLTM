@@ -11,3 +11,4 @@ plotly==4.14.1
 fbprophet==0.7.1
 requests==2.25.0
 datetime==4.3
+gunicorn==20.0.4

@@ -41,7 +41,7 @@ from query import *
 
 # Decompose time series into cycle and trend for HP filter Model
 def hp_filter_decomposition(dataframe):
-    cycle, trend = sm.tsa.filters.hpfilter(dataframe['y'], 10000)
+    cycle, trend = sm.tsa.filters.hpfilter(dataframe['y'], 5000)
     dec = pd.DataFrame(dataframe[['ds', 'y']])
     dec["cycle"] = cycle
     dec["trend"] = trend

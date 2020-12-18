@@ -550,7 +550,7 @@ def get_data(n_clicks):
 
 
 # Create prophet anomaly graph based on user input
-@@app.callback(Output('anomaly-output-graph', 'figure'),
+@app.callback(Output('anomaly-output-graph', 'figure'),
               Output('anomaly-heatmap-dropdown', 'options'),
               Input('anomaly-submit-button', 'n_clicks'),
               State('data-holder', 'data'),

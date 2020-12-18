@@ -174,6 +174,48 @@ def es_get_diff_ts(ts):
     return transposed_data_w_coor
 
 
+# Input a ts0 and return the temperatures for the first available ts before (including) ts0 and the previous one
+def es_get_current_diff():
+    ts = str(datetime.datetime.now().replace(microsecond=00))[2:]
+
+    ts1 = time_in_unix_time(ts)
+    query = {
+        "size": 2,
+        "query": {
+            "bool": {
+                "filter": [
+                    {
+                        "range": {
+                            "TS": {
+                                "lte": ts1,
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "sort": [
+            {
+                "TS": {
+                    "order": "desc"
+                }
+            }
+        ]
+    }
+
+    r = requests.get(url=elastic_url, headers=header, json=query)
+    response = r.json()
+
+    cleaned_data = clean_data(response)
+    transposed_data = cleaned_data.pivot(index='sensorId', columns='TS', values='temp').reset_index()
+    transposed_data_w_coor = add_coordinates(transposed_data)
+    transposed_data_w_coor['diff'] = transposed_data_w_coor[transposed_data_w_coor.columns[2]] - transposed_data_w_coor[
+        transposed_data_w_coor.columns[1]]
+    transposed_data_w_coor = transposed_data_w_coor.round({'diff': 1})
+
+    return transposed_data_w_coor
+
+
 # Elastic search to query for data for Daniel's prophet model
 def es_get_data(ts, size, aggregated=False):
     query = {

@@ -130,7 +130,7 @@ def create_plotly_ff_heatmap_diff(dataframe):
     )
 
     heatmap.update_layout(
-        title=('Changes in temp. between ' + ts0 + ' and ' + ts1),
+        title=('Temperature changes from ' + ts0),
         xaxis=dict(title='Column', side='bottom'),
         yaxis=dict(title='Row', autorange="reversed"),
         plot_bgcolor='rgba(0,0,0,0)',

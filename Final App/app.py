@@ -81,9 +81,6 @@ sidebar = html.Div(
     [
         html.H2("IBM RACK TEMPERATURE", className="display-5"),
         html.Hr(),
-        html.P(
-            "A simple sidebar layout with navigation links", className="lead"
-        ),
         dbc.Nav(
             [
                 dbc.NavLink("Dashboard", href="/page-1", id="page-1-link", external_link=True, active="exact"),
@@ -114,7 +111,7 @@ tab_dashboard = html.Div([
     ]),
     dbc.Col([
         dcc.Graph(
-            id='',
+            id='live-update-heatmap-diff-graph',
             style={'height': '90vh'}
         ),
     ])
@@ -302,7 +299,7 @@ tab_about = html.Div([
                             [
                                 html.H5("Marc-Robin Gruener", className="card-title"),
                                 html.P([
-                                    "Marc was heavily involved on many different tasks. He mainly focused on integrating the different modules everyone was working on into a comprehensive software solution. Furthermore, he created the different heatmaps, wrote functions for the database queries and therefore ensured that the tool runs efficiently and with real time data, and he examined and tested various modeling approaches himself. Please contact Marc for very general issues: ",
+                                    "Marc's main responsibility was turning the various Machine Learning models into a comprehensive software solution. He developed the backend including the database queries and data manipulations that transformed the data into a standardized format, improving the efficiency. Furthermore, he defined and impelemted various features in the app such as the heatmap functionality. He also designed and created the frontend of the app. Please contact Marc  regarding questions about the backend and the features: ",
                                     html.A('email',
                                            href='mailto:marc-robin.gruener@student.unisg.ch?subject=IBM Temperature Management Dashboard',
                                            target='_blank'), ],
@@ -509,12 +506,15 @@ def render_page_content(pathname):
 
 # Update graph every minute for most current data
 @app.callback(Output('live-update-heatmap-graph', 'figure'),
+              Output('live-update-heatmap-diff-graph', 'figure'),
               Input('interval-component', 'n_intervals'))
 def update_heatmap_automatically(n):
     current_data = es_get_most_current_temps()
     heatmap = create_plotly_ff_heatmap_abs(current_data)
+    data_diff = es_get_current_diff()
+    heatmap_diff = create_plotly_ff_heatmap_diff(data_diff)
 
-    return heatmap
+    return heatmap,  heatmap_diff
 
 
 # Create heatmap graph based on user input ts

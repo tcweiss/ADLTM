@@ -154,7 +154,16 @@ tab_anomalies = html.Div([
         id='anomaly-dropdown-holder',
         # style={'display': 'none'}
     ),
+    html.Div(
+        id='data-holder'
+    ),
     html.Div([
+        dbc.Row([
+            html.Button(
+                id='load-data-button',
+                children='Load Data'
+            ),
+        ]),
         dbc.Row([
             dbc.Col([
                 html.H5(
@@ -526,27 +535,52 @@ def update_heatmap_user_ts(n_clicks, ts_value):
     return heatmap_abs, heatmap_diff
 
 
+# Loads data into a hidden div to be used as input for models
+@app.callback(Output('data-holder', 'data'),
+              Output('load-data-button', 'disabled'),
+              Input('load-data-button', 'n_clicks'),
+              prevent_initial_call=True)
+def get_data(n_clicks):
+    data = es_get_last_days(30, aggregated=False)
+    data_json = data.to_json()
+
+    on_off = True
+
+    return data_json, on_off
+
+
 # Create prophet anomaly graph based on user input
-@app.callback(Output('anomaly-output-graph', 'figure'),
+@@app.callback(Output('anomaly-output-graph', 'figure'),
               Output('anomaly-heatmap-dropdown', 'options'),
               Input('anomaly-submit-button', 'n_clicks'),
+              State('data-holder', 'data'),
               State('anomaly-model-dropdown', 'value'),
               State('anomaly-sensor-input', 'value'),
               State('anomaly-days-dropdown', 'value'),
 			  prevent_initial_call=True)
-def update_anomaly_model_input(n_clicks, model, sensor, days):
+def update_anomaly_model_input(n_clicks, data, model, sensor, days):
     if n_clicks is None:
         raise PreventUpdate
     else:
-        if model == 'gaussian':
-            aggregated = True
-        elif 'r' in sensor:
-            aggregated = True
+        if model == 'gaussian' or 'r' in sensor:
+            data = pd.read_json(data)
+            data = data.reset_index()
+            data = data.rename(columns={'index': 'TS'})
+            data = convert_to_regions(data)
+            date = datetime.datetime.today() - datetime.timedelta(days=int(days))
+            data = data[data.index>=date]
+
         else:
-            aggregated = False
+            data = pd.read_json(data)
+            data = data.reset_index()
+            data = data.rename(columns={'index': 'TS'})
+            data['TS'] = pd.to_datetime(data['TS'], yearfirst=True)
+            data = data.set_index('TS')
+            date = datetime.datetime.today() - datetime.timedelta(days=int(days))
+            data = data[data.index>=date]
+
 
         if model == 'gaussian':
-            data = es_get_last_days(days, aggregated=True)
             data_manipulated = gaussian_data_manipulation(data)
             mean, cov, thr = gaussian_return_params()
             multivar = gaussian_fit_model(mean=mean, cov=cov)
@@ -561,8 +595,8 @@ def update_anomaly_model_input(n_clicks, model, sensor, days):
             return fig, anomalies_dropdown
 
         elif model == 'hp_filter':
-            data = es_get_last_days(days, aggregated=aggregated)
             ind_region_data = get_sub_df(data, sensor)
+            ind_region_data = ind_region_data.rename(columns={'index': 'ds'})
             decomposed_data = hp_filter_decomposition(ind_region_data)
             error_data = hp_filter_calc_error(decomposed_data)
             anomalies = hp_filter_get_anomalies(error_data)
@@ -575,14 +609,13 @@ def update_anomaly_model_input(n_clicks, model, sensor, days):
             return fig, anomalies_dropdown
 
         elif model == 'prophet':
-            data_prophet = es_get_last_days(days, aggregated=aggregated)
-            sub_df = get_sub_df(data_prophet, sensor)
+            sub_df = get_sub_df(data, sensor)
+            sub_df = sub_df.rename(columns={'index':'ds'})
             forecast = prophet_fit_model(sub_df)
             anomalies = prophet_detect_anomalies(forecast)
             fig = prophet_get_graph(anomalies)
 
             anomalies_ts = prophet_get_anomaly_ts(anomalies)
-            print(anomalies_ts)
             anomalies_dropdown = [{'label': str(i), 'value': str(i)} for i in anomalies_ts['ds']]
 
             return fig, anomalies_dropdown

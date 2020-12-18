@@ -382,7 +382,7 @@ tab_about = html.Div([
                             [
                                 html.H5("Thomas Weiss", className="card-title"),
                                 html.P([
-                                    "Thomas guaranteed a smooth cooperation by setting up a Github-Repo. Additionally, he contributed a lot to the development of the application with his expertise in programming and the creation of dashboards... Please contact Thomas if you would like to build this application with R Shiny: ",
+                                    "Thomas is behind the non-visible parts of the project. On an overarching level, he ensured a smooth collaboration by taking care of version control and testing. At a more concrete level, he supported the selection and improvement process of the three models by creating additional models for comparison. He also provided for a seamless functioning of the app by fixing bugs. Contact Thomas for technical details or potential functional problems: ",
                                     html.A('email',
                                            href='mailto:tcweiss@protonmail.com?subject=IBM Temperature Management Dashboard',
                                            target='_blank'), ],

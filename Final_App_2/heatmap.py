@@ -1,0 +1,178 @@
+###Heatmap Functions
+
+"""
+Summary:
+
+This is the further elaboration of the docstring. Within this section,
+you can elaborate further on details as appropriate for the situation.
+Notice that the summary and the elaboration is separated by a blank new
+line.
+"""
+
+#Import Packages:-------------------------------------------------------------------------------------------
+
+import dash
+import dash_core_components as dcc
+import dash_bootstrap_components as dbc
+import dash_html_components as html
+from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
+import dash_table
+import plotly
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.figure_factory as ff
+import pandas as pd
+import datetime
+import requests
+import base64
+import math
+from fbprophet import Prophet
+import time
+import numpy as np
+from scipy.stats import multivariate_normal
+# from plotly.subplots import make_subplots
+import statsmodels.api as sm
+from plotly import subplots
+
+from query import *
+
+#Functions for Heatmap:-------------------------------------------------------------------------------------------------
+
+# Takes dataframe and returns a numpy array that can be used for the create_plotly_ff_heatmap
+def create_heatmap_array(dataframe):
+    array = dataframe.pivot('y', 'x', 'temp').values
+
+    return array
+
+
+def create_heatmap_array2(dataframe):
+    array = dataframe.pivot('y', 'x', dataframe.columns[1]).values
+
+    return array
+
+
+# Takes dataframe of difference in temp and returns a numpy array that can be used for create_plotly_ff_heatmap_diff
+def create_heatmap_diff_array(dataframe):
+    array = dataframe.pivot('y', 'x', 'diff').values
+
+    return array
+
+
+# Takes dataframe as an input and returns x and y lists for
+# the axis labels that can be used for the plotly.figure_factory.create_annotated_heatmap
+def create_axis_lists(dataframe):
+    x_list = dataframe['x'].to_list()
+    x_list = list(dict.fromkeys(x_list))
+    y_list = dataframe['y'].to_list()
+    y_list = list(dict.fromkeys(y_list))
+    # y_list.reverse()
+
+    return x_list, y_list
+
+
+# Takes a dataframe as an input and returns a plotly.graphical_objects heatmap
+def create_plotly_go_heatmap(dataframe):
+    heatmap = go.Figure(go.Heatmap(
+        x=dataframe['x'],
+        y=dataframe['y'],
+        z=dataframe['temp']))
+
+    return heatmap
+
+
+# Takes a dataframe as an input and returns a plotly.figure_factory annotated heatmap
+def create_plotly_ff_heatmap_abs(dataframe):
+    # colorscale_heatmap = [[0, 'rgb(0,67,206)'], [0.5, 'rgb(105,41,196)'],[1, 'rgb(162,25,31)']]
+    colorscale_heatmap = [[0, 'rgb(69,137,255)'], [1, 'rgb(250,77,86)']]
+
+    x_list, y_list = create_axis_lists(dataframe)
+    heatmap_array = create_heatmap_array(dataframe)
+    ts = get_timestamp(dataframe)
+
+    heatmap = ff.create_annotated_heatmap(
+        x=x_list,
+        y=y_list,
+        z=heatmap_array,
+        colorscale=colorscale_heatmap,
+        xgap=10,
+        ygap=1,
+        showscale=True
+    )
+
+    heatmap.update_layout(
+        title=('Absolute temperature at ' + ts),
+        xaxis=dict(title='Column', color='black', side='bottom'),
+        yaxis=dict(title='Row', autorange="reversed"),
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
+
+    heatmap.data[0].colorbar = dict(title='Temperature', titleside='right')
+
+    return heatmap
+
+
+# Takes a dataframe as an input and returns a plotly.figure_factory annotated heatmap
+def create_plotly_ff_heatmap_abs2(dataframe):
+    # colorscale_heatmap = [[0, 'rgb(0,67,206)'], [0.5, 'rgb(105,41,196)'],[1, 'rgb(162,25,31)']]
+    colorscale_heatmap = [[0, 'rgb(69,137,255)'], [1, 'rgb(250,77,86)']]
+
+    x_list, y_list = create_axis_lists(dataframe)
+    heatmap_array = create_heatmap_array2(dataframe)
+    ts = dataframe.columns[2]
+
+    heatmap = ff.create_annotated_heatmap(
+        x=x_list,
+        y=y_list,
+        z=heatmap_array,
+        colorscale=colorscale_heatmap,
+        xgap=10,
+        ygap=1,
+        showscale=True
+    )
+
+    heatmap.update_layout(
+        title=('Absolute temperature at ' + ts),
+        xaxis=dict(title='Column', color='black', side='bottom'),
+        yaxis=dict(title='Row', autorange="reversed"),
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
+
+    heatmap.data[0].colorbar = dict(title='Temperature', titleside='right')
+
+    return heatmap
+
+
+# Takes a dataframe with difference in temps as an input and returns a plotly.figure_factory annotated heatmap
+def create_plotly_ff_heatmap_diff(dataframe):
+    # colorscale_heatmap = [[0, 'rgb(0,67,206)'], [0.5, 'rgb(105,41,196)'],[1, 'rgb(162,25,31)']]
+    max, min = dataframe['diff'].max(), dataframe['diff'].min()
+    midpoint = abs(min) / (abs(max) + abs(min))
+    colorscale_heatmap = [[0, 'rgb(69,137,255)'], [midpoint, 'rgb(255,255,255)'], [1, 'rgb(250,77,86)']]
+
+    x_list, y_list = create_axis_lists(dataframe)
+    heatmap_array = create_heatmap_diff_array(dataframe)
+    ts0, ts1 = dataframe.columns[1], dataframe.columns[2]
+
+    heatmap = ff.create_annotated_heatmap(
+        x=x_list,
+        y=y_list,
+        z=heatmap_array,
+        autocolorscale=False,
+        colorscale=colorscale_heatmap,
+        font_colors=['black'],
+        xgap=10,
+        ygap=1,
+        showscale=True
+    )
+
+    heatmap.update_layout(
+        title=('Temperature changes from ' + ts0),
+        xaxis=dict(title='Column', side='bottom'),
+        yaxis=dict(title='Row', autorange="reversed"),
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
+
+    heatmap.data[0].colorbar = dict(title='Temperature Change', titleside='right')
+
+    return heatmap

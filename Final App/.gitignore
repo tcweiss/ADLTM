@@ -1,0 +1,12 @@
+.cfignore
+LICENSE
+README.md
+.idea
+etc
+Include
+Lib
+Scripts
+share
+pyvenv.cfg
+manifest.yml
+__pycache__

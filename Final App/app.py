@@ -383,7 +383,7 @@ tab_about = html.Div([
             [
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/thomas.PNG", top=True, style={"border-radius": "130px"}),
+                        dbc.CardImg(src="/assets/thomas.png", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Thomas Weiss", className="card-title"),
@@ -410,7 +410,7 @@ tab_about = html.Div([
                 dbc.Card(style={"max-width": "110px", "border": "none"}),
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/Adam.PNG", top=True, style={"border-radius": "130px"}),
+                        dbc.CardImg(src="/assets/Adam.png", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Adam Novak", className="card-title"),
@@ -437,7 +437,7 @@ tab_about = html.Div([
                 dbc.Card(style={"max-width": "110px", "border": "none"}),
                 dbc.Card(
                     [
-                        dbc.CardImg(src="/assets/Lorenz.png", top=True, style={"border-radius": "130px"}),
+                        dbc.CardImg(src="/assets/lorenz.png", top=True, style={"border-radius": "130px"}),
                         dbc.CardBody(
                             [
                                 html.H5("Lorenz Schmidlin", className="card-title"),
